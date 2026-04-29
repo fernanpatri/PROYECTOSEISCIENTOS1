@@ -1,4 +1,5 @@
 #include "control/enriquecimiento/e_frioralenty.h"
+#include "control/interpolation_1d.h"
 
 /*
 Enriquecimiento de mezcla durante el calentamiento del motor
@@ -9,8 +10,8 @@ Enriquecimiento de mezcla durante el calentamiento del motor
 volatile uint16_t frioralenty_enrich_percent = 100;
 
 
-/* eje de temperatura del motor */
-static const int8_t frioralenty_temp_axis[] =
+/* eje de temperatura del motor (°C) */
+static const int16_t frioralenty_temp_axis[] =
 {
     -10,
     -5,
@@ -49,7 +50,7 @@ static const uint16_t frioralenty_enrichment_table[] =
 };
 
 
-/* número de puntos (calculado en compilación) */
+/* número de puntos */
 #define FRIORALENTY_POINTS (sizeof(frioralenty_temp_axis) / sizeof(frioralenty_temp_axis[0]))
 
 
@@ -60,39 +61,25 @@ _Static_assert(
 );
 
 
-/* obtiene enriquecimiento interpolado */
+/* ========================= */
+/* 🔥 FUNCIÓN PRINCIPAL      */
+/* ========================= */
+
 uint16_t enrichment_frioralenty_get(int16_t temp)
 {
-    uint8_t i;
-
-    /* límites */
-    if (temp <= frioralenty_temp_axis[0])
-        return frioralenty_enrichment_table[0];
-
-    if (temp >= frioralenty_temp_axis[FRIORALENTY_POINTS - 1])
-        return frioralenty_enrichment_table[FRIORALENTY_POINTS - 1];
-
-    /* buscar intervalo */
-    for (i = 0; i < (FRIORALENTY_POINTS - 1); i++)
-    {
-        if (temp < frioralenty_temp_axis[i + 1])
-        {
-            int16_t t1 = frioralenty_temp_axis[i];
-            int16_t t2 = frioralenty_temp_axis[i + 1];
-
-            uint16_t e1 = frioralenty_enrichment_table[i];
-            uint16_t e2 = frioralenty_enrichment_table[i + 1];
-
-            /* interpolación lineal (entera) */
-            return e1 + ((temp - t1) * (e2 - e1)) / (t2 - t1);
-        }
-    }
-
-    return frioralenty_enrichment_table[FRIORALENTY_POINTS - 1];
+    return interp1d(
+        temp,
+        frioralenty_temp_axis,
+        frioralenty_enrichment_table,
+        FRIORALENTY_POINTS
+    );
 }
 
 
-/* aplica enriquecimiento */
+/* ========================= */
+/* 🔧 APLICACIÓN             */
+/* ========================= */
+
 uint16_t enrichment_frioralenty_apply(uint16_t base_pw, int16_t temp)
 {
     frioralenty_enrich_percent = enrichment_frioralenty_get(temp);

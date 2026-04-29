@@ -1,4 +1,5 @@
 #include "control/enriquecimiento/e_arranque.h"
+#include "control/interpolation_1d.h"
 
 /*
 Enriquecimiento de arranque en frío
@@ -10,7 +11,7 @@ volatile uint16_t cranking_enrich_percent = 100;
 
 
 /* eje de temperaturas (°C) */
-static const int8_t cranking_temp_axis[] =
+static const int16_t cranking_temp_axis[] =
 {
     -10,
     -5,
@@ -49,49 +50,36 @@ static const uint16_t cranking_enrichment_table[] =
 };
 
 
-/* número de puntos (calculado en compilación) */
+/* número de puntos */
 #define CRANKING_POINTS (sizeof(cranking_temp_axis) / sizeof(cranking_temp_axis[0]))
 
-/* comprobación en compilación (C11 o superior) */
+
+/* comprobación en compilación */
 _Static_assert(
     CRANKING_POINTS == (sizeof(cranking_enrichment_table) / sizeof(cranking_enrichment_table[0])),
     "ERROR: temp_axis y enrichment_table deben tener el mismo tamaño"
 );
 
 
-/* obtiene el enriquecimiento interpolado según temperatura */
+/* ========================= */
+/* 🔥 FUNCIÓN PRINCIPAL      */
+/* ========================= */
+
 uint16_t enrichment_cranking_get(int16_t temp)
 {
-    uint8_t i;
-
-    /* límites de tabla */
-    if (temp <= cranking_temp_axis[0])
-        return cranking_enrichment_table[0];
-
-    if (temp >= cranking_temp_axis[CRANKING_POINTS - 1])
-        return cranking_enrichment_table[CRANKING_POINTS - 1];
-
-    /* buscar intervalo */
-    for (i = 0; i < (CRANKING_POINTS - 1); i++)
-    {
-        if (temp < cranking_temp_axis[i + 1])
-        {
-            int16_t t1 = cranking_temp_axis[i];
-            int16_t t2 = cranking_temp_axis[i + 1];
-
-            uint16_t e1 = cranking_enrichment_table[i];
-            uint16_t e2 = cranking_enrichment_table[i + 1];
-
-            /* interpolación lineal (entera, sin float) */
-            return e1 + ((temp - t1) * (e2 - e1)) / (t2 - t1);
-        }
-    }
-
-    return cranking_enrichment_table[CRANKING_POINTS - 1];
+    return interp1d(
+        temp,
+        cranking_temp_axis,
+        cranking_enrichment_table,
+        CRANKING_POINTS
+    );
 }
 
 
-/* aplica enriquecimiento al tiempo de inyección */
+/* ========================= */
+/* 🔧 APLICACIÓN             */
+/* ========================= */
+
 uint16_t enrichment_cranking_apply(uint16_t base_pw, int16_t temp)
 {
     cranking_enrich_percent = enrichment_cranking_get(temp);
