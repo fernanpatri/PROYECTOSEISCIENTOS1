@@ -14,6 +14,20 @@ volatile uint16_t tiempo_final_pw = 0;
 
 
 /* =========================
+   🔥 MAPA DE FUEL
+   ========================= */
+
+static const map2d_t fuel_map =
+{
+    .x_bins = rpm_bins,
+    .y_bins = tps_bins,
+    .table  = (const uint16_t*)fuel_table,
+    .x_size = RPM_POINTS,
+    .y_size = TPS_POINTS
+};
+
+
+/* =========================
    ESTADOS DEL MOTOR
    ========================= */
 
@@ -34,7 +48,7 @@ static engine_state_t prev_state   = ENGINE_OFF;
 
 #define CRANK_RPM_THRESHOLD   300
 #define RUN_RPM_THRESHOLD     650
-#define STABLE_TIME           40   // ciclos (ajusta según loop)
+#define STABLE_TIME           40
 
 
 /* =========================
@@ -62,7 +76,7 @@ uint16_t fuel_calculate_pw(uint16_t rpm, uint8_t tps)
 
 
     /* =========================
-       DETECCIÓN DE ESTADO ESTABLE
+       DETECCIÓN DE ESTADO
        ========================= */
 
     if (rpm_filtered < CRANK_RPM_THRESHOLD)
@@ -107,9 +121,9 @@ uint16_t fuel_calculate_pw(uint16_t rpm, uint8_t tps)
 
     if (engine_state == ENGINE_RUNNING && prev_state == ENGINE_CRANKING)
     {
-    	if (!posarranque_activo())
+        if (!posarranque_activo())
         {
-            posarranque_begin();   // SOLO UNA VEZ
+            posarranque_begin();
         }
     }
 
@@ -117,10 +131,10 @@ uint16_t fuel_calculate_pw(uint16_t rpm, uint8_t tps)
 
 
     /* =========================
-       COMBUSTIBLE BASE
+       🔥 COMBUSTIBLE BASE
        ========================= */
 
-    base_pw = interpolate_2d(rpm_filtered, tps);
+    base_pw = map2d_get(&fuel_map, rpm_filtered, tps);
     tiemp_base_pw = base_pw;
 
 
@@ -138,17 +152,15 @@ uint16_t fuel_calculate_pw(uint16_t rpm, uint8_t tps)
         cranking_enrich_percent = 100;
     }
 
-
-    /* AFTERSTART (usa tu módulo) */
+    /* AFTERSTART */
     base_pw = enrichment_posarranque_apply(base_pw);
-
 
     /* WARMUP */
     base_pw = enrichment_frioralenty_apply(base_pw, sensors.temp_engine);
 
 
     /* =========================
-       PROTECCIONES (muy importante)
+       PROTECCIONES
        ========================= */
 
     if (base_pw < 100)

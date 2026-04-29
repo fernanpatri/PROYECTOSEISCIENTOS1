@@ -3,7 +3,7 @@
 const uint16_t rpm_bins[RPM_POINTS] =
 {800,1500,2000,2500,3000,3500,4000,4500};
 
-const uint8_t tps_bins[TPS_POINTS] =
+const uint16_t tps_bins[TPS_POINTS] =
 {0,10,20,40,60,80,90,100};
 
 const uint16_t fuel_table[RPM_POINTS][TPS_POINTS] =
