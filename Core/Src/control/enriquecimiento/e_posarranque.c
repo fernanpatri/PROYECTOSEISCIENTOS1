@@ -15,7 +15,7 @@ static uint32_t start_timer = 0;
 #define POSARRANQUE_DURATION     200   // ciclos
 #define POSARRANQUE_MAX          120   // % máximo
 
-#define RPM_START_THRESHOLD      500
+#define RPM_START_THRESHOLD      600
 #define RPM_STOP_THRESHOLD       300
 
 #define START_STABLE_TIME_MS     100   // estabilidad para confirmar arranque
