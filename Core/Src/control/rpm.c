@@ -98,16 +98,7 @@ void rpm_capture_callback(uint32_t capture)
     }
     /*==================== ARRANQUE ====================*/
 
-    if(engine_rpm > 600 && engine_running == 0)
-    {
-        posarranque_begin();
-        engine_running = 1;
-    }
 
-    if(engine_rpm < 400)
-    {
-        engine_running = 0;
-    }
 }
 
 /*==================== TIMEOUT ====================*/

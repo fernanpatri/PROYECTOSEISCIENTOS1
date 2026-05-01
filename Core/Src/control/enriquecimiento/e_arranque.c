@@ -26,7 +26,7 @@ static const int16_t cranking_temp_axis[] =
     60,
     70,
     80,
-    95
+    90
 };
 
 
@@ -46,7 +46,7 @@ static const uint16_t cranking_enrichment_table[] =
     120,  // 60°C
     110,  // 70°C
     105,  // 80°C
-    100   // 95°C
+    100   // 90°C
 };
 
 

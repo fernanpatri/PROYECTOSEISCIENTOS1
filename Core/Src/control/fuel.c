@@ -5,7 +5,7 @@
 #include "sensores/sensores.h"
 #include "control/enriquecimiento/e_frioralenty.h"
 #include "control/enriquecimiento/e_posarranque.h"
-
+#include "stm32h7xx_hal.h"
 
 /* variable global visible para el debugger */
 extern volatile uint16_t tiempo_base_pw;
@@ -39,7 +39,6 @@ typedef enum
 } engine_state_t;
 
 static engine_state_t engine_state = ENGINE_OFF;
-static engine_state_t prev_state   = ENGINE_OFF;
 
 
 /* =========================
@@ -116,18 +115,10 @@ uint16_t fuel_calculate_pw(uint16_t rpm, uint8_t tps)
 
 
     /* =========================
-       DETECTAR ARRANQUE REAL
+       🔥 ACTUALIZAR POSARRANQUE (CLAVE)
        ========================= */
 
-    if (engine_state == ENGINE_RUNNING && prev_state == ENGINE_CRANKING)
-    {
-        if (!posarranque_activo())
-        {
-            posarranque_begin();
-        }
-    }
-
-    prev_state = engine_state;
+    posarranque_update(rpm_filtered, HAL_GetTick());
 
 
     /* =========================
@@ -152,7 +143,7 @@ uint16_t fuel_calculate_pw(uint16_t rpm, uint8_t tps)
         cranking_enrich_percent = 100;
     }
 
-    /* AFTERSTART */
+    /* AFTERSTART (ahora autónomo) */
     base_pw = enrichment_posarranque_apply(base_pw);
 
     /* WARMUP */

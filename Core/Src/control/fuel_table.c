@@ -8,7 +8,7 @@ const uint16_t tps_bins[TPS_POINTS] =
 
 const uint16_t fuel_table[RPM_POINTS][TPS_POINTS] =
 {
-/* TPS →   0     1     2     3     4     5     6     7  */
+/* TPS →   0     1     2     3     4     5     6     7  */  // Tanto porciento de apertura de acelerador
 /* RPM ↓ */
 
 {1200,1250,1300,1450,1600,1750,1900,2050}, // 1000 rpm

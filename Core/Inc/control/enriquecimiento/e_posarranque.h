@@ -3,18 +3,16 @@
 
 #include <stdint.h>
 
-/* porcentaje visible en debugger */
+/* debug */
 extern volatile uint16_t posarranque_enrich_percent;
 
-/* iniciar enriquecimiento después del arranque */
-void posarranque_begin(void);
+/* update con contexto (CLAVE) */
+void posarranque_update(uint16_t rpm, uint32_t now_ms);
 
 /* aplicar enriquecimiento */
 uint16_t enrichment_posarranque_apply(uint16_t base_pw);
 
-/* actualizar contador */
-/* llamada periódica para reducir duración del posarranque */
-void posarranque_update(void);
+/* estado */
 uint8_t posarranque_activo(void);
 
 #endif
