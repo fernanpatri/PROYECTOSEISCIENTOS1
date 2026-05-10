@@ -2,8 +2,8 @@
 
 CalibrationData calibration =
 {
-    .throttle_min = 1900,
-    .throttle_max = 2600,
+    .throttle_min = 600,
+    .throttle_max = 1130,
 
     .temp_engine_min =0,
     .temp_engine_max =4095,
