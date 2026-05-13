@@ -62,19 +62,23 @@ void sensors_update(void)
     /* conversión a porcentaje */
 
     if(calibration.throttle_max > calibration.throttle_min)
-    {
-        sensors.throttle_percent =
-            100 * (sensors.throttle_filtered - calibration.throttle_min) /
-            (calibration.throttle_max - calibration.throttle_min);
-    }
-    else
-    {
-        sensors.throttle_percent = 0;
-    }
+        {
+            int32_t throttle_value = sensors.throttle_filtered;
+            int32_t throttle_min = calibration.throttle_min;
+            int32_t throttle_max = calibration.throttle_max;
 
-    if(sensors.throttle_percent > 100)
-        sensors.throttle_percent = 100;
+            if(throttle_value < throttle_min)
+                throttle_value = throttle_min;
 
-    if(sensors.throttle_percent < 0)
-        sensors.throttle_percent = 0;
+            if(throttle_value > throttle_max)
+                throttle_value = throttle_max;
+
+            sensors.throttle_percent =
+                (uint16_t)(100 * (throttle_value - throttle_min) /
+                (throttle_max - throttle_min));
+        }
+        else
+        {
+            sensors.throttle_percent = 0;
+        }
 }
