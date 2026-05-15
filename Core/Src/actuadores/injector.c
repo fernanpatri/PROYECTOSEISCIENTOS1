@@ -14,6 +14,11 @@ static volatile uint8_t injector_active = 0;
 void injector_close(void)
 {
     HAL_GPIO_WritePin(INYECTOR_GPIO_Port, INYECTOR_Pin, GPIO_PIN_RESET);
+
+    HAL_TIM_Base_Stop_IT(&htim5);
+    __HAL_TIM_SET_COUNTER(&htim5, 0);
+    __HAL_TIM_CLEAR_FLAG(&htim5, TIM_FLAG_UPDATE);
+
     injector_active = 0;
 }
 

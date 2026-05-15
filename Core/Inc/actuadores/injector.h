@@ -3,7 +3,7 @@
 
 #include "main.h"
 
-extern uint16_t tiempo_final_pw;
+extern volatile uint16_t tiempo_final_pw;
 
 void injector_open(void);
 void injector_close(void);

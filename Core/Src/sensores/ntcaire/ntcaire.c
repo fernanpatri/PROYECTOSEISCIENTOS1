@@ -2,6 +2,8 @@
 #include <math.h>
 
 #define ADC_MAX   4095.0f
+#define ADC_MIN_VALID  1U
+#define ADC_MAX_VALID  4094U
 #define VREF      3.3f
 
 /* divisor resistivo */
@@ -28,11 +30,15 @@ float ntc_air_adc_to_temp(uint16_t adc)
     float voltage;
     float r_ntc;
 
-    /* ADC → voltaje */
+    if (adc < ADC_MIN_VALID)
+        adc = ADC_MIN_VALID;
+
+    if (adc > ADC_MAX_VALID)
+        adc = ADC_MAX_VALID;
+
+    /* ADC to voltage */
     voltage = ((float)adc * VREF) / ADC_MAX;
 
     /* divisor resistivo */
     r_ntc = R_FIXED * voltage / (VREF - voltage);
-
-    return ntc_resistance_to_temp(r_ntc);
 }

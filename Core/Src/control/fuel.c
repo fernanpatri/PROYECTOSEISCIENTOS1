@@ -118,7 +118,7 @@ uint16_t fuel_calculate_pw(uint16_t rpm, uint8_t tps)
        🔥 ACTUALIZAR POSARRANQUE (CLAVE)
        ========================= */
 
-    posarranque_update(rpm_filtered, HAL_GetTick());
+    //posarranque_update(rpm_filtered, HAL_GetTick());
 
 
     /* =========================

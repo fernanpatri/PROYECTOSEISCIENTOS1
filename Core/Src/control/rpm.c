@@ -14,7 +14,7 @@ static uint32_t last_pulse_time = 0;   // ✅ NUEVO (tiempo real)
 
 static uint8_t engine_running = 0;
 
-extern uint16_t tiempo_final_pw;
+extern volatile uint16_t tiempo_final_pw;
 
 // NUEVO
 static uint8_t injection_counter = 0;

@@ -20,9 +20,15 @@ SensorData sensors;
 
 void sensors_init(void)
 {
-    HAL_ADCEx_Calibration_Start(&hadc1, ADC_CALIB_OFFSET, ADC_SINGLE_ENDED);
+    if (HAL_ADCEx_Calibration_Start(&hadc1, ADC_CALIB_OFFSET, ADC_SINGLE_ENDED) != HAL_OK)
+    {
+        Error_Handler();
+    }
 
-    HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_buffer, 3);
+    if (HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_buffer, 3) != HAL_OK)
+    {
+        Error_Handler();
+    }
 }
 
 

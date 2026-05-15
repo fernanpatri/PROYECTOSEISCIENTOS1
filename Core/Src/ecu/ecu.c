@@ -70,6 +70,7 @@ void ecu_loop(void)
 
 	    /* ===== 4. ARRANQUE ===== */
 	   // posarranque_update();
+
 	    posarranque_update(engine_rpm, HAL_GetTick());
 	    /* ===== tareas cada 100 ms ===== */
 
